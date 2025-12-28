@@ -1,26 +1,28 @@
 desc:    Tempo sync for all
-version: 0.0
+version: 0.5
 tags:    utility tempo
 link:    https://github.com/mrtnvgr/jsfx
 
-slider11:note_division=1<0,6,1{Bar,1/2,4th,8th,16th,32nd,64th}>Note division
-slider12:note_kind=1<0,2,1{Straight,Dotted,Triplets}>Note kind
+slider11:note_division_number=0<6,0,-1{1/1,1/2,1/4,1/8,1/16,1/32,1/64}>Note division
+slider12:note_kind=0<0,2,1{straight,dotted,triplet}>Note kind
 slider13:note_count=1<1,32,1>Note count
 
-slider21:ms=0<0,9999,0>Output (ms)
+slider21:ms=0<0,1,0>Output (ms)
 
-slider31:float1=0<0,9999,1>Float start (ms)
-slider32:float2=0<0,9999,1>Float end (ms)
+slider31:float1=0<0,10000,1>Float start (ms)
+slider32:float2=0<0,10000,1>Float end (ms)
 slider33:float=0<0,1,0>Output (float)
 
-slider41:trigger_off=0<0,1,0.00001>Trigger off position
-slider42:trigger_on=1<0,1,0.00001>Trigger on position
-slider43:trigger_type=1<0,1,1{Each note,Every sample}>Trigger on
-slider44:trigger_ms=1<1,256,1>Trigger length (ms)
-slider45:trigger=0<0,1,0>Output (trigger)
+/*
+  slider41:trigger_off=0<0,1,0.001>Trigger off position
+  slider42:trigger_on=1<0,1,0.001>Trigger on position
+  slider43:trigger_type=0<0,1,1{Each note,Every sample}>Trigger on
+  slider44:trigger_percent=1<1,256,1>Trigger length (% of note)
+  slider45:trigger=0<0,1,0>Output (trigger)
+*/
 
 //todo
-slider51:sync=1<0,1,1{Off,On}>Sync
+//slider99:sync=1<0,1,1{Off,On}>Sync
 
 in_pin:none
 out_pin:none
@@ -28,30 +30,30 @@ out_pin:none
 @init
 ext_tail_size = -2;
 
-BEAT_MS = 240000;
-
 @slider
-// Guard limits???
-(note_count < 1) ? (
-  note_count = 1;
+note_division = 2 ^ note_division_number;
+
+ms_per_division = ((1 / note_division) * 240000);
+    (note_kind == 1) ? ( // dotted
+  ms_per_division *= 1.5;
+) : (note_kind == 2) ? ( // triplet
+  ms_per_division *= 2/3;
 );
 
-ms = floor(
-  (BEAT_MS / tempo) / (note_division + 1) * note_count
-);
+ms_per_notes = ms_per_division * note_count;
 
-(float2 > float1) ? (
-  float_start = float2;
-  float_end = float1;
-) : (
-  float_start = float1;
-  float_end = float2;
-);
+float_delta =
+  (float2 > float1) ?
+    ( float2 - float1 )
+  :
+    ( float1 - float2 );
+float_delta = 1 / float_delta;
 
-// (ms > float_end) ?????
+//trigger_samples = (srate / 1000) * trigger_ms;
 
-float = (float_end - float_start) / ms;
+@sample
+ms = floor(ms_per_notes / tempo);
 
-trigger_samples = (srate / 1000) * trigger_ms;
+float = ms * float_delta;
 
 // TODO: trigger
