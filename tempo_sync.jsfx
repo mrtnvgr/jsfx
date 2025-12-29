@@ -1,5 +1,5 @@
 desc:    Tempo sync for all
-version: 0.5
+version: 0.5-dev
 tags:    utility tempo
 link:    https://github.com/mrtnvgr/jsfx
 
@@ -8,6 +8,7 @@ slider12:note_kind=0<0,2,1{straight,dotted,triplet}>Note kind
 slider13:note_count=1<1,32,1>Note count
 
 slider21:ms=0<0,1,0>Output (ms)
+slider22:ms_int_rounding=0<0,1,1{Off,On}>Round ms?
 
 slider31:float1=0<0,10000,1>Float start (ms)
 slider32:float2=0<0,10000,1>Float end (ms)
@@ -33,7 +34,7 @@ ext_tail_size = -2;
 @slider
 note_division = 2 ^ note_division_number;
 
-ms_per_division = ((1 / note_division) * 240000);
+ms_per_division = (1 / note_division) * 240000;
     (note_kind == 1) ? ( // dotted
   ms_per_division *= 1.5;
 ) : (note_kind == 2) ? ( // triplet
@@ -52,8 +53,11 @@ float_delta = 1 / float_delta;
 //trigger_samples = (srate / 1000) * trigger_ms;
 
 @sample
-ms = floor(ms_per_notes / tempo);
+ms = ms_per_notes / tempo;
+(ms_int_rounding) ? ( ms = floor(ms); );
 
 float = ms * float_delta;
+
+ms = floor(ms);
 
 // TODO: trigger
