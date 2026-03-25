@@ -33,3 +33,7 @@ Converts MIDI CC events to audio CV *with batteries included*.
 ### [**Parameter scale / invert / attenuate / attenuvert**](./jsfx/other/parameter_utils.jsfx)
 
 Dead simple jsfx for parameter scaling, offseting.
+
+### [tanh(x)](./jsfx/fx/tanh.jsfx)
+
+Hyperbolic tangent audio shaping, a cool soft clipper thingy.

@@ -1,0 +1,37 @@
+desc:    tanh(x)
+version: 1.0
+link:    https://github.com/mrtnvgr/jsfx
+
+slider11:input_db=0<-12,128,0.0001>Input (dB)
+slider52:output_db=0<-48,48,0.0001>Output (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+ext_noinit    =  1.0;
+ext_tail_size = -2;
+
+function tanh(x) (
+  2/(1+exp(-2*x)) - 1
+);
+
+function db2gain(db) (
+  pow(10, db * 0.05)
+);
+
+@slider
+input_gain  = db2gain(input_db);
+output_gain = db2gain(output_db);
+
+@sample
+spl0 *= input_gain;
+spl1 *= input_gain;
+
+spl0  = tanh(spl0);
+spl1  = tanh(spl1);
+
+spl0 *= output_gain;
+spl1 *= output_gain;
