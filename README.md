@@ -37,3 +37,7 @@ Dead simple jsfx for parameter scaling, offseting.
 ### [tanh(x)](./jsfx/fx/tanh.jsfx)
 
 Hyperbolic tangent audio shaping, a cool soft clipper thingy.
+
+### [Guitar Graphic EQ](./jsfx/fx/guitar_eq.jsfx)
+
+A modification of RBJ 7-band EQ using frequencies from BOSS GE-7.
